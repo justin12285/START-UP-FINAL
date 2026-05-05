@@ -1,11 +1,15 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { RouteProvider } from './contexts/RouteContext';
 import Home from './pages/Home';
+import MapPage from './pages/MapPage';
+import NotificationsPage from './pages/NotificationsPage';
+import SettingsPage from './pages/SettingsPage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import NavbarTabs from './components/NavbarTabs';
 
-// PrivateRoute component to protect routes
 function PrivateRoute({ children }) {
   const { currentUser } = useAuth();
   
@@ -13,10 +17,14 @@ function PrivateRoute({ children }) {
     return <Navigate to="/login" />;
   }
   
-  return children;
+  return (
+    <>
+      {children}
+      <NavbarTabs />
+    </>
+  );
 }
 
-// Redirect if already logged in
 function PublicOnlyRoute({ children }) {
   const { currentUser } = useAuth();
   
@@ -31,32 +39,19 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route 
-            path="/" 
-            element={
-              <PrivateRoute>
-                <Home />
-              </PrivateRoute>
-            } 
-          />
-          <Route 
-            path="/login" 
-            element={
-              <PublicOnlyRoute>
-                <Login />
-              </PublicOnlyRoute>
-            } 
-          />
-          <Route 
-            path="/signup" 
-            element={
-              <PublicOnlyRoute>
-                <Signup />
-              </PublicOnlyRoute>
-            } 
-          />
-        </Routes>
+        <RouteProvider>
+          <Routes>
+            {/* Private Routes with Tabs */}
+            <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="/map" element={<PrivateRoute><MapPage /></PrivateRoute>} />
+            <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
+            <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
+            
+            {/* Public Auth Routes */}
+            <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+            <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+          </Routes>
+        </RouteProvider>
       </AuthProvider>
     </Router>
   );

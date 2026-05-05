@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { MapPin, Navigation, Search } from 'lucide-react';
+import { locationDictionary } from '../services/mockData';
 
 export default function SearchBar({ onSearch, popularSearches }) {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
+  const locations = Object.keys(locationDictionary);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,69 +17,80 @@ export default function SearchBar({ onSearch, popularSearches }) {
   const handlePopularSearchClick = (popOrigin, popDest) => {
     setOrigin(popOrigin);
     setDestination(popDest);
-    onSearch(popOrigin, popDest);
+    onSearch(popOrigin, popDest); // Automatically trigger search
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      <form onSubmit={handleSubmit} className="bg-surface rounded-3xl p-4 shadow-xl border border-gray-800/50 relative overflow-hidden">
+    <div className="w-full mx-auto space-y-6">
+      <form onSubmit={handleSubmit} className="bg-surface rounded-[32px] p-4 shadow-2xl border border-gray-800/50 relative overflow-hidden">
         {/* Decorative gradient */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-blue-400 to-secondary"></div>
         
-        <div className="space-y-3 relative">
+        <div className="space-y-4 relative mt-2">
           {/* Tracking Line */}
-          <div className="absolute left-[19px] top-6 bottom-6 w-0.5 bg-gray-800 border-l border-dashed border-gray-700 z-0"></div>
+          <div className="absolute left-[22px] top-8 bottom-8 w-[2px] bg-gray-800 border-l-2 border-dashed border-gray-700 z-0"></div>
           
-          <div className="relative z-10 flex items-center bg-gray-900/50 rounded-2xl p-1 border border-transparent focus-within:border-primary/50 focus-within:bg-gray-900 transition-all">
-            <div className="p-2 bg-gray-800 rounded-xl mr-3">
-              <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+          <div className="relative z-10 flex items-center bg-gray-900/60 rounded-2xl p-2 border border-gray-800 focus-within:border-primary/50 transition-all">
+            <div className="p-2 bg-gray-800 rounded-full mr-3 shrink-0">
+              <div className="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_rgba(59,130,246,0.6)]"></div>
             </div>
             <input
               type="text"
+              list="locations"
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               placeholder="Current location"
-              className="bg-transparent border-none w-full text-white placeholder-gray-500 focus:outline-none py-2 text-lg"
+              className="bg-transparent border-none w-full text-white placeholder-gray-500 focus:outline-none py-2 text-lg font-medium"
               required
             />
           </div>
 
-          <div className="relative z-10 flex items-center bg-gray-900/50 rounded-2xl p-1 border border-transparent focus-within:border-secondary/50 focus-within:bg-gray-900 transition-all">
-            <div className="p-2 bg-gray-800 rounded-xl mr-3">
-              <MapPin className="w-4 h-4 text-secondary drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+          <div className="relative z-10 flex items-center bg-gray-900/60 rounded-2xl p-2 border border-gray-800 focus-within:border-secondary/50 transition-all">
+            <div className="p-2 bg-gray-800 rounded-full mr-3 shrink-0">
+              <MapPin className="w-5 h-5 text-secondary drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
             </div>
             <input
               type="text"
+              list="locations"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
               placeholder="Where are you headed?"
-              className="bg-transparent border-none w-full text-white placeholder-gray-500 focus:outline-none py-2 text-lg"
+              className="bg-transparent border-none w-full text-white placeholder-gray-500 focus:outline-none py-2 text-lg font-medium"
               required
             />
           </div>
         </div>
 
+        <datalist id="locations">
+          {locations.map(loc => <option key={loc} value={loc} />)}
+        </datalist>
+
         <button
           type="submit"
-          className="w-full mt-4 bg-white text-black font-semibold py-4 rounded-2xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2 text-lg active:scale-[0.98]"
+          className="w-full mt-5 bg-primary text-white font-bold py-4 rounded-2xl hover:bg-blue-600 transition-all flex items-center justify-center gap-2 text-lg shadow-lg shadow-primary/25 active:scale-[0.98]"
         >
-          <Search className="w-5 h-5" />
+          <Search className="w-6 h-6" />
           Find Route
         </button>
       </form>
 
       {/* Popular Searches */}
-      <div className="space-y-3">
-        <h3 className="text-gray-400 text-sm font-medium uppercase tracking-wider px-2">Popular routes</h3>
-        <div className="flex flex-wrap gap-2">
+      <div className="space-y-4 pt-2">
+        <h3 className="text-gray-400 text-sm font-bold uppercase tracking-wider px-2">Popular</h3>
+        <div className="flex flex-col gap-3">
           {popularSearches.map((search, index) => (
             <button
               key={index}
               onClick={() => handlePopularSearchClick(search.origin, search.destination)}
-              className="bg-surface/60 hover:bg-surface border border-gray-800 hover:border-gray-600 text-gray-300 text-sm px-4 py-2.5 rounded-xl transition-all flex items-center gap-2"
+              className="bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-200 text-left px-5 py-4 rounded-2xl transition-all flex items-center gap-4 group"
             >
-              <Navigation className="w-3.5 h-3.5 text-primary" />
-              <span>{search.label}</span>
+              <div className="bg-gray-800 p-2.5 rounded-full group-hover:bg-primary/20 transition-colors">
+                <Navigation className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold">{search.label}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{search.origin} → {search.destination}</p>
+              </div>
             </button>
           ))}
         </div>

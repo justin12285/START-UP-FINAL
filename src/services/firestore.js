@@ -91,3 +91,15 @@ export const getAnnouncements = async () => {
     return [];
   }
 };
+
+// Profit Tracking
+export const recordEarnings = async (amount) => {
+  try {
+    await addDoc(collection(db, "earnings"), {
+      amount,
+      timestamp: serverTimestamp()
+    });
+  } catch (error) {
+    console.error("Error recording earnings: ", error);
+  }
+};

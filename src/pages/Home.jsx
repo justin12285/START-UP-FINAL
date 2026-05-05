@@ -1,39 +1,63 @@
 import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
 import SearchBar from '../components/SearchBar';
-import MapView from '../components/MapView';
 import RouteCard from '../components/RouteCard';
+import FareCalculator from '../components/FareCalculator';
 import Feedback from '../components/Feedback';
-import Announcements from '../components/Announcements';
-import { findRoute } from '../services/firestore';
-import { getMockRoute, popularSearches } from '../services/mockData';
+import { useRouteContext } from '../contexts/RouteContext';
+import { getCoordinates, popularSearches } from '../services/mockData';
+import { fetchOSRMRoute } from '../services/routing';
+import { recordEarnings, findRoute } from '../services/firestore';
+import { Map as MapIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
-  const [route, setRoute] = useState(null);
+  const { route, setRouteData } = useRouteContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSearch = async (origin, destination) => {
     setLoading(true);
     setError('');
-    setRoute(null);
     
     try {
-      // 1. Try to find route in Firestore
+      const originPos = getCoordinates(origin);
+      const destPos = getCoordinates(destination);
+
+      if (!originPos || !destPos) {
+        setError("Location not found in database. Please try a popular location.");
+        setLoading(false);
+        return;
+      }
+
+      // Profit Tracking
+      await recordEarnings(2);
+
+      // Fetch route info (type, landmarks)
       let foundRoute = await findRoute(origin, destination);
       
-      // 2. Fallback to mock data if not found
       if (!foundRoute) {
-        foundRoute = getMockRoute(origin, destination);
+        foundRoute = {
+          routeName: "General Route",
+          transportType: "Tricycle", // fallback
+          landmarks: [],
+          origin,
+          destination
+        };
       }
+
+      // Fetch OSRM Real Road Coordinates
+      const coords = await fetchOSRMRoute(originPos, destPos);
       
-      if (foundRoute) {
-        setRoute(foundRoute);
+      if (coords) {
+        setRouteData(foundRoute, coords, [originPos.lat, originPos.lng], [destPos.lat, destPos.lng]);
+        navigate('/map'); // Navigate to map instantly after searching like a ride hailing app
       } else {
-        setError("Sorry, we couldn't find a route for this journey.");
+        setError("Failed to fetch road geometry.");
       }
+
     } catch (err) {
-      setError("An error occurred while searching for the route.");
+      setError("An error occurred during search.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -41,45 +65,41 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Navbar />
+    <div className="min-h-screen bg-background pb-24 relative">
+      {/* Decorative Dark Map Background */}
+      <div className="absolute inset-0 bg-[url('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/14/13601/7791.png')] opacity-20 bg-cover bg-center pointer-events-none"></div>
       
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-8">
-        
-        {/* Left Column - Controls & Info */}
-        <div className="w-full lg:w-[400px] flex flex-col gap-6 shrink-0 z-10">
-          <SearchBar onSearch={handleSearch} popularSearches={popularSearches} />
-          
-          {loading && (
-            <div className="bg-surface border border-gray-800 rounded-3xl p-8 flex justify-center items-center">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          )}
-
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-3xl text-center">
-              {error}
-            </div>
-          )}
-
-          {route && !loading && (
-            <div className="space-y-6">
-              <RouteCard route={route} />
-              <Feedback routeId={route.id} />
-            </div>
-          )}
-          
-          <div className="mt-auto pt-6">
-            <Announcements />
+      <div className="relative z-10 max-w-md mx-auto px-4 pt-12 flex flex-col gap-6">
+        <div className="flex flex-col items-center">
+          <div className="bg-primary p-2.5 rounded-2xl mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+            <MapIcon className="w-8 h-8 text-white" />
           </div>
+          <h1 className="text-4xl font-black tracking-tighter text-white mb-1">transee</h1>
+          <p className="text-gray-400 text-sm font-medium">Find your multicab route in Butuan City</p>
         </div>
 
-        {/* Right Column - Map */}
-        <div className="w-full flex-1 h-[500px] lg:h-[calc(100vh-8rem)] min-h-[400px] sticky top-24 z-0">
-          <MapView coordinates={route?.coordinates} />
-        </div>
-        
-      </main>
+        <SearchBar onSearch={handleSearch} popularSearches={popularSearches} />
+
+        {loading && (
+          <div className="bg-surface/90 border border-gray-800 rounded-3xl p-6 flex justify-center items-center backdrop-blur-sm">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-2xl text-center text-sm font-medium backdrop-blur-sm">
+            {error}
+          </div>
+        )}
+
+        {route && !loading && !error && (
+          <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
+            <RouteCard route={route} />
+            <FareCalculator transportType={route.transportType} />
+            <Feedback routeId={route.id || route.routeName} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
