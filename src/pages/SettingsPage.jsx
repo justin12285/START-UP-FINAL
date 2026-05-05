@@ -2,6 +2,8 @@ import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, LogOut, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AnimatedPage from '../components/AnimatedPage';
+import { motion } from 'framer-motion';
 
 export default function SettingsPage() {
   const { userProfile, logout } = useAuth();
@@ -17,8 +19,9 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="max-w-md mx-auto px-4 pt-12">
+    <AnimatedPage>
+      <div className="min-h-screen bg-background pb-24">
+        <div className="w-full px-4 pt-12">
         <h1 className="text-3xl font-bold text-white mb-8">Settings</h1>
         
         <div className="space-y-6">
@@ -61,15 +64,17 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <button
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             onClick={handleLogout}
             className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2 mt-8"
           >
             <LogOut className="w-5 h-5" />
             Log Out
-          </button>
+          </motion.button>
+        </div>
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

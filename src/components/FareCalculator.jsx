@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tag, Receipt } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function FareCalculator({ transportType }) {
   const [passengerType, setPassengerType] = useState('Regular');
@@ -22,7 +23,11 @@ export default function FareCalculator({ transportType }) {
   const estimatedFare = Math.max(10, Math.round(baseFare - (baseFare * discount)));
 
   return (
-    <div className="bg-surface border border-gray-800 rounded-3xl p-5 shadow-xl mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-surface border border-gray-800 rounded-3xl p-5 shadow-xl mt-4"
+    >
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-white font-semibold flex items-center gap-2">
           <Receipt className="w-5 h-5 text-primary" />
@@ -47,6 +52,6 @@ export default function FareCalculator({ transportType }) {
           <option value="PWD">PWD (20% off)</option>
         </select>
       </div>
-    </div>
+    </motion.div>
   );
 }

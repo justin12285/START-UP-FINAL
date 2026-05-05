@@ -9,6 +9,8 @@ import { fetchOSRMRoute } from '../services/routing';
 import { recordEarnings, findRoute } from '../services/firestore';
 import { Map as MapIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AnimatedPage from '../components/AnimatedPage';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 export default function Home() {
   const { route, setRouteData } = useRouteContext();
@@ -65,11 +67,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24 relative">
-      {/* Decorative Dark Map Background */}
-      <div className="absolute inset-0 bg-[url('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/14/13601/7791.png')] opacity-20 bg-cover bg-center pointer-events-none"></div>
-      
-      <div className="relative z-10 max-w-md mx-auto px-4 pt-12 flex flex-col gap-6">
+    <AnimatedPage>
+      <div className="min-h-screen bg-background pb-24 relative overflow-hidden">
+        {/* Decorative Dark Map Background */}
+        <div className="absolute inset-0 bg-[url('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/14/13601/7791.png')] opacity-20 bg-cover bg-center pointer-events-none"></div>
+        
+        <div className="relative z-10 w-full px-4 pt-12 flex flex-col gap-6">
         <div className="flex flex-col items-center">
           <div className="bg-primary p-2.5 rounded-2xl mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
             <MapIcon className="w-8 h-8 text-white" />
@@ -80,11 +83,7 @@ export default function Home() {
 
         <SearchBar onSearch={handleSearch} popularSearches={popularSearches} />
 
-        {loading && (
-          <div className="bg-surface/90 border border-gray-800 rounded-3xl p-6 flex justify-center items-center backdrop-blur-sm">
-            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        )}
+        {loading && <SkeletonLoader />}
 
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-2xl text-center text-sm font-medium backdrop-blur-sm">
@@ -100,6 +99,7 @@ export default function Home() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </AnimatedPage>
   );
 }

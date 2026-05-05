@@ -7,10 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#121212',
-        surface: '#1e1e1e',
-        primary: '#3b82f6',
-        secondary: '#10b981',
+        background: '#0f172a',
+        surface: '#1e293b',
+        primary: '#4f46e5',
+        secondary: '#3b82f6',
       }
     },
   },

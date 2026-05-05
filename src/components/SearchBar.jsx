@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Navigation, Search } from 'lucide-react';
 import { locationDictionary } from '../services/mockData';
+import { motion } from 'framer-motion';
 
 export default function SearchBar({ onSearch, popularSearches }) {
   const [origin, setOrigin] = useState('');
@@ -65,13 +66,14 @@ export default function SearchBar({ onSearch, popularSearches }) {
           {locations.map(loc => <option key={loc} value={loc} />)}
         </datalist>
 
-        <button
+        <motion.button
+          whileTap={{ scale: 0.95 }}
           type="submit"
-          className="w-full mt-5 bg-primary text-white font-bold py-4 rounded-2xl hover:bg-blue-600 transition-all flex items-center justify-center gap-2 text-lg shadow-lg shadow-primary/25 active:scale-[0.98]"
+          className="w-full mt-5 bg-primary text-white font-bold py-4 rounded-2xl hover:bg-indigo-500 transition-all flex items-center justify-center gap-2 text-lg shadow-[0_4px_20px_rgba(79,70,229,0.4)]"
         >
           <Search className="w-6 h-6" />
           Find Route
-        </button>
+        </motion.button>
       </form>
 
       {/* Popular Searches */}
@@ -79,10 +81,11 @@ export default function SearchBar({ onSearch, popularSearches }) {
         <h3 className="text-gray-400 text-sm font-bold uppercase tracking-wider px-2">Popular</h3>
         <div className="flex flex-col gap-3">
           {popularSearches.map((search, index) => (
-            <button
+            <motion.button
               key={index}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handlePopularSearchClick(search.origin, search.destination)}
-              className="bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-200 text-left px-5 py-4 rounded-2xl transition-all flex items-center gap-4 group"
+              className="bg-surface/60 backdrop-blur-md hover:bg-surface border border-gray-800 text-gray-200 text-left px-5 py-4 rounded-2xl transition-all flex items-center gap-4 group shadow-md"
             >
               <div className="bg-gray-800 p-2.5 rounded-full group-hover:bg-primary/20 transition-colors">
                 <Navigation className="w-5 h-5 text-primary" />
@@ -91,7 +94,7 @@ export default function SearchBar({ onSearch, popularSearches }) {
                 <p className="font-semibold">{search.label}</p>
                 <p className="text-xs text-gray-500 mt-0.5">{search.origin} → {search.destination}</p>
               </div>
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
