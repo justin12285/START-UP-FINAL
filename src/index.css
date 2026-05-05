@@ -22,3 +22,18 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+
+/* Map Polyline Flow Animation */
+.path-anim {
+  stroke-dasharray: 20 20;
+  animation: flow 1.5s linear infinite;
+}
+
+@keyframes flow {
+  from {
+    stroke-dashoffset: 40;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

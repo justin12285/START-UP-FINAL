@@ -64,11 +64,12 @@ export default function MapView({ routeCoords, originPos, destPos }) {
         {routeCoords && routeCoords.length > 0 && (
           <Polyline 
             positions={routeCoords} 
-            color="#3b82f6" 
-            weight={6} 
+            color="#4f46e5" 
+            weight={8} 
             opacity={0.9} 
             lineCap="round" 
             lineJoin="round" 
+            className="path-anim"
           />
         )}
 

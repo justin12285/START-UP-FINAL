@@ -11,12 +11,14 @@ export function RouteProvider({ children }) {
   const [routeCoords, setRouteCoords] = useState([]);
   const [originPos, setOriginPos] = useState(null);
   const [destPos, setDestPos] = useState(null);
+  const [navigationData, setNavigationData] = useState(null);
 
-  const setRouteData = (newRoute, coords, origin, dest) => {
+  const setRouteData = (newRoute, coords, origin, dest, navData) => {
     setRoute(newRoute);
     setRouteCoords(coords);
     setOriginPos(origin);
     setDestPos(dest);
+    setNavigationData(navData);
   };
 
   const clearRoute = () => {
@@ -24,10 +26,11 @@ export function RouteProvider({ children }) {
     setRouteCoords([]);
     setOriginPos(null);
     setDestPos(null);
+    setNavigationData(null);
   };
 
   return (
-    <RouteContext.Provider value={{ route, routeCoords, originPos, destPos, setRouteData, clearRoute }}>
+    <RouteContext.Provider value={{ route, routeCoords, originPos, destPos, navigationData, setRouteData, clearRoute }}>
       {children}
     </RouteContext.Provider>
   );

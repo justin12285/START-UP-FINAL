@@ -48,11 +48,17 @@ export default function Home() {
         };
       }
 
-      // Fetch OSRM Real Road Coordinates
-      const coords = await fetchOSRMRoute(originPos, destPos);
+      // Fetch OSRM Real Road Coordinates & Navigation Data
+      const routeData = await fetchOSRMRoute(originPos, destPos);
       
-      if (coords) {
-        setRouteData(foundRoute, coords, [originPos.lat, originPos.lng], [destPos.lat, destPos.lng]);
+      if (routeData) {
+        setRouteData(
+          foundRoute, 
+          routeData.coords, 
+          [originPos.lat, originPos.lng], 
+          [destPos.lat, destPos.lng],
+          { distance: routeData.distance, duration: routeData.duration, steps: routeData.steps }
+        );
         navigate('/map'); // Navigate to map instantly after searching like a ride hailing app
       } else {
         setError("Failed to fetch road geometry.");

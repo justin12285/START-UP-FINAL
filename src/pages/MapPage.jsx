@@ -1,12 +1,13 @@
 import MapView from '../components/MapView';
 import { useRouteContext } from '../contexts/RouteContext';
-import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import AnimatedPage from '../components/AnimatedPage';
 import { motion } from 'framer-motion';
+import NavigationSheet from '../components/NavigationSheet';
 
 export default function MapPage() {
-  const { routeCoords, originPos, destPos } = useRouteContext();
+  const { routeCoords, originPos, destPos, navigationData } = useRouteContext();
   const navigate = useNavigate();
 
   return (
@@ -20,6 +21,7 @@ export default function MapPage() {
           <ArrowLeft className="w-5 h-5" />
         </motion.button>
         <MapView routeCoords={routeCoords} originPos={originPos} destPos={destPos} />
+        <NavigationSheet navigationData={navigationData} />
       </div>
     </AnimatedPage>
   );
