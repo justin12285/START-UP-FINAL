@@ -1,30 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Map } from 'lucide-react';
 
 export default function SplashScreen({ onComplete }) {
+  const [done, setDone] = useState(false);
+
+  // Safety fallback — always dismiss after 2.8s even if animation doesn't fire
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDone(true);
+      onComplete();
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+
+  if (done) return null;
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
       transition={{ duration: 0.5, delay: 2 }}
-      onAnimationComplete={onComplete}
-      className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center pointer-events-none"
+      onAnimationComplete={() => {
+        setDone(true);
+        onComplete();
+      }}
+      className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center"
     >
-      <motion.div 
+      <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         className="flex flex-col items-center"
       >
-        <motion.div 
+        <motion.div
           animate={{ y: [0, -10, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
           className="bg-primary p-4 rounded-[32px] shadow-[0_0_40px_rgba(79,70,229,0.5)] mb-6"
         >
           <Map className="w-16 h-16 text-white" />
         </motion.div>
-        
         <h1 className="text-5xl font-black text-white tracking-tighter">transee</h1>
         <p className="text-primary mt-2 font-semibold tracking-widest text-sm uppercase">Butuan City</p>
       </motion.div>

@@ -58,7 +58,11 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div className="fixed inset-0 bg-background flex items-center justify-center z-[9998]">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : children}
     </AuthContext.Provider>
   );
 }
